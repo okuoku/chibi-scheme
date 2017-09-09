@@ -35,7 +35,7 @@ sexp sexp_fixnum_to_bignum (sexp ctx, sexp a) {
   return res;
 }
 
-sexp sexp_make_integer (sexp ctx, sexp_lsint_t x) {
+sexp sexp_make_integer (sexp ctx, sexp_sint_t x) {
   sexp res;
   if ((SEXP_MIN_FIXNUM <= x) && (x <= SEXP_MAX_FIXNUM)) {
     res = sexp_make_fixnum(x);
@@ -52,7 +52,7 @@ sexp sexp_make_integer (sexp ctx, sexp_lsint_t x) {
   return res;
 }
 
-sexp sexp_make_unsigned_integer (sexp ctx, sexp_luint_t x) {
+sexp sexp_make_unsigned_integer (sexp ctx, sexp_uint_t x) {
   sexp res;
   if (x <= SEXP_MAX_FIXNUM) {
     res = sexp_make_fixnum(x);
@@ -531,8 +531,8 @@ sexp sexp_bignum_quot_rem (sexp ctx, sexp *rem, sexp a, sexp b) {
            << (sizeof(sexp_uint_t)*8))
           + sexp_bignum_data(b1)[blen-2]);
     if (alen > 2 && blen > 2 &&
-        sexp_bignum_data(a1)[alen-1] < (1uL<<(sizeof(sexp_uint_t)*4)) &&
-        sexp_bignum_data(b1)[blen-1] < (1uL<<(sizeof(sexp_uint_t)*4))) {
+        sexp_bignum_data(a1)[alen-1] < ((sexp_luint_t)1<<(sizeof(sexp_uint_t)*4)) &&
+        sexp_bignum_data(b1)[blen-1] < ((sexp_luint_t)1<<(sizeof(sexp_uint_t)*4))) {
       dn = (dn << (sizeof(sexp_uint_t)*4))
         + (sexp_bignum_data(a1)[alen-3] >> (sizeof(sexp_uint_t)*4));
       dd = (dd << (sizeof(sexp_uint_t)*4))
@@ -544,8 +544,8 @@ sexp sexp_bignum_quot_rem (sexp ctx, sexp *rem, sexp a, sexp b) {
              << (sizeof(sexp_uint_t)*8))
             + sexp_bignum_data(a1)[alen-2]);
       dd = sexp_bignum_data(b1)[blen-1];
-      if (sexp_bignum_data(a1)[alen-1] < (1uL<<(sizeof(sexp_uint_t)*4)) &&
-          sexp_bignum_data(b1)[blen-1] < (1uL<<(sizeof(sexp_uint_t)*4))) {
+      if (sexp_bignum_data(a1)[alen-1] < ((sexp_luint_t)1<<(sizeof(sexp_uint_t)*4)) &&
+          sexp_bignum_data(b1)[blen-1] < ((sexp_luint_t)1<<(sizeof(sexp_uint_t)*4))) {
         dn = (dn << (sizeof(sexp_uint_t)*4))
           + (sexp_bignum_data(a1)[alen-3] >> (sizeof(sexp_uint_t)*4));
         dd = (dd << (sizeof(sexp_uint_t)*4))

@@ -386,7 +386,7 @@ static const char* sexp_initial_features[] = {
 #if SEXP_BSD
   "bsd",
 #endif
-#if defined(_WIN32) || defined(__MINGW32__)
+#if defined(_WIN32)
   "windows",
 #endif
 #if SEXP_USE_DL
@@ -1224,7 +1224,7 @@ sexp sexp_string_concatenate_op (sexp ctx, sexp self, sexp_sint_t n, sexp str_ls
 }
 
 #define FNV_PRIME 16777619
-#define FNV_OFFSET_BASIS 2166136261uL
+#define FNV_OFFSET_BASIS ((sexp_sint_t)2166136261)
 
 #if SEXP_USE_HASH_SYMS
 
@@ -1423,7 +1423,7 @@ int sexp_buffered_write_string (sexp ctx, const char *str, sexp p) {
 }
 
 int sexp_buffered_flush (sexp ctx, sexp p, int forcep) {
-  long res = 0, off;
+  sexp_sint_t res = 0, off;
   sexp_gc_var1(tmp);
   if (!sexp_oportp(p) || (!forcep && !sexp_port_openp(p)))
     return -1;
@@ -1860,10 +1860,10 @@ sexp sexp_apply_writer(sexp ctx, sexp writer, sexp obj, sexp out) {
 
 sexp sexp_write_one (sexp ctx, sexp obj, sexp out) {
 #if SEXP_USE_HUFF_SYMS
-  unsigned long res;
+  sexp_uint_t res;
 #endif
-  unsigned long len, c;
-  long i=0;
+  sexp_uint_t len, c;
+  sexp_sint_t i=0;
 #if SEXP_USE_FLONUMS
   double f, ftmp;
 #endif
@@ -1895,7 +1895,7 @@ sexp sexp_write_one (sexp ctx, sexp obj, sexp out) {
       } else {
         sexp_write_string(ctx, "#(", out);
         sexp_write_one(ctx, elts[0], out);
-        for (i=1; i<(long)len; i++) {
+        for (i=1; i<(sexp_sint_t)len; i++) {
           sexp_write_char(ctx, ' ', out);
           sexp_write_one(ctx, elts[i], out);
         }
@@ -2045,7 +2045,7 @@ sexp sexp_write_one (sexp ctx, sexp obj, sexp out) {
       sexp_write_string(ctx, "#u8(", out);
       str = sexp_bytes_data(obj);
       len = sexp_bytes_length(obj);
-      for (i=0; i<(long)len; i++) {
+      for (i=0; i<(sexp_sint_t)len; i++) {
         if (i!=0) sexp_write_char(ctx, ' ', out);
         sexp_write(ctx, sexp_make_fixnum(((unsigned char*)str)[i]), out);
       }

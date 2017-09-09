@@ -17,7 +17,7 @@ extern "C" {
 #include "chibi/features.h"
 #include "chibi/install.h"
 
-#if defined(_WIN32) || defined(__MINGW32__)
+#if defined(_WIN32)
 #include <windows.h>
 #define sexp_isalpha(x) ((isalpha)((int)(x)))
 #define sexp_isxdigit(x) ((isxdigit)((int)(x)))
@@ -197,15 +197,20 @@ enum sexp_types {
 #define SEXP_STRING_CURSOR SEXP_FIXNUM
 #endif
 
-/* procedure flags */
-#define SEXP_PROC_NONE 0uL
-#define SEXP_PROC_VARIADIC 1uL
-#define SEXP_PROC_UNUSED_REST 2uL
-
 #ifdef _WIN32
+#if defined(_MSC_VER) && SEXP_64_BIT
+/* On SEXP_64_BIT, 128bits arithmetic is mandatory */
+#error Unsupported configuration
+#endif
+#ifdef SEXP_64_BIT
+typedef unsigned int sexp_tag_t;
+typedef unsigned long long sexp_uint_t;
+typedef long long sexp_sint_t;
+#else
 typedef unsigned short sexp_tag_t;
 typedef SIZE_T sexp_uint_t;
 typedef SSIZE_T sexp_sint_t;
+#endif
 #define sexp_heap_align(n) sexp_align(n, 5)
 #define sexp_heap_chunks(n) (sexp_heap_align(n)>>5)
 #elif SEXP_64_BIT
@@ -227,6 +232,12 @@ typedef int sexp_sint_t;
 #define sexp_heap_align(n) sexp_align(n, 4)
 #define sexp_heap_chunks(n) (sexp_heap_align(n)>>4)
 #endif
+
+/* procedure flags */
+#define SEXP_PROC_NONE ((sexp_uint_t)0)
+#define SEXP_PROC_VARIADIC ((sexp_uint_t)1)
+#define SEXP_PROC_UNUSED_REST ((sexp_uint_t)2)
+
 
 #ifdef SEXP_USE_INTTYPES
 # include <inttypes.h>
@@ -806,8 +817,8 @@ SEXP_API int sexp_idp(sexp x);
 #define sexp_make_fixnum(n)    ((sexp) ((((sexp_sint_t)(n))<<SEXP_FIXNUM_BITS) + SEXP_FIXNUM_TAG))
 #define sexp_unbox_fixnum(n)   (((sexp_sint_t)(n))>>SEXP_FIXNUM_BITS)
 #else
-#define sexp_make_fixnum(n)    ((sexp) ((((sexp_sint_t)(n))*(sexp_sint_t)(1uL<<SEXP_FIXNUM_BITS)) | SEXP_FIXNUM_TAG))
-#define sexp_unbox_fixnum(n)   (((sexp_sint_t)((sexp_uint_t)(n) & ~SEXP_FIXNUM_TAG))/(sexp_sint_t)(1uL<<SEXP_FIXNUM_BITS))
+#define sexp_make_fixnum(n)    ((sexp) ((((sexp_sint_t)(n))*(sexp_sint_t)((sexp_sint_t)1<<SEXP_FIXNUM_BITS)) | SEXP_FIXNUM_TAG))
+#define sexp_unbox_fixnum(n)   (((sexp_sint_t)((sexp_uint_t)(n) & ~SEXP_FIXNUM_TAG))/(sexp_sint_t)((sexp_sint_t)1<<SEXP_FIXNUM_BITS))
 #endif
 
 #define SEXP_NEG_ONE sexp_make_fixnum(-1)
@@ -864,8 +875,8 @@ SEXP_API int sexp_idp(sexp x);
 #endif
 
 #if SEXP_USE_BIGNUMS
-SEXP_API sexp sexp_make_integer(sexp ctx, sexp_lsint_t x);
-SEXP_API sexp sexp_make_unsigned_integer(sexp ctx, sexp_luint_t x);
+SEXP_API sexp sexp_make_integer(sexp ctx, sexp_sint_t x);
+SEXP_API sexp sexp_make_unsigned_integer(sexp ctx, sexp_uint_t x);
 #define sexp_exact_integerp(x) (sexp_fixnump(x) || sexp_bignump(x))
 #else
 #define sexp_make_integer(ctx, x) sexp_make_fixnum(x)
