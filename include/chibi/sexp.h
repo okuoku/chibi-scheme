@@ -19,6 +19,7 @@ extern "C" {
 
 #if defined(_WIN32)
 #include <windows.h>
+#include <errno.h>
 #define sexp_isalpha(x) ((isalpha)((int)(x)))
 #define sexp_isxdigit(x) ((isxdigit)((int)(x)))
 #define sexp_isdigit(x) ((isdigit)((int)(x)))
@@ -202,14 +203,14 @@ enum sexp_types {
 /* On SEXP_64_BIT, 128bits arithmetic is mandatory */
 #error Unsupported configuration
 #endif
-#ifdef SEXP_64_BIT
+#if SEXP_64_BIT
 typedef unsigned int sexp_tag_t;
 typedef unsigned long long sexp_uint_t;
 typedef long long sexp_sint_t;
 #else
 typedef unsigned short sexp_tag_t;
-typedef SIZE_T sexp_uint_t;
-typedef SSIZE_T sexp_sint_t;
+typedef unsigned int sexp_uint_t;
+typedef int sexp_sint_t;
 #endif
 #define sexp_heap_align(n) sexp_align(n, 5)
 #define sexp_heap_chunks(n) (sexp_heap_align(n)>>5)
