@@ -3,6 +3,7 @@
 /*  BSD-style license: http://synthcode.com/license.txt       */
 
 #include <chibi/eval.h>
+#include <stdlib.h>
 
 #ifndef PLAN9
 #include <errno.h>
