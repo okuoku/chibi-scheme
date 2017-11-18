@@ -203,7 +203,7 @@ enum sexp_types {
 /* On SEXP_64_BIT, 128bits arithmetic is mandatory */
 #error Unsupported configuration
 #endif
-#if SEXP_64_BIT
+#ifdef _WIN64
 typedef unsigned int sexp_tag_t;
 typedef unsigned long long sexp_uint_t;
 typedef long long sexp_sint_t;
