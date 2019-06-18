@@ -173,6 +173,24 @@ if(WIN32)
 endif()
 
 #
+# static library for embedding
+#
+
+add_library(chibi-scheme-static STATIC
+    ${chibi-scheme-srcs}
+    ${clibout}
+    main.c)
+
+set_target_properties(chibi-scheme-static
+    PROPERTIES COMPILE_DEFINITIONS "SEXP_USE_STATIC_LIBS=1")
+
+add_dependencies(chibi-scheme-static chibi-scheme-stubs)
+
+if(WIN32)
+    target_link_libraries(chibi-scheme-static ws2_32)
+endif()
+
+#
 # Generate "chibi/install.h" 
 #
 
@@ -278,3 +296,12 @@ foreach(e ${testlibs})
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR})
 endforeach()
 
+# 
+# Testing (embedding)
+#
+
+add_executable(test-foreign-apply-loop
+    tests/foreign/apply-loop.c)
+
+target_link_libraries(test-foreign-apply-loop
+    chibi-scheme-static)

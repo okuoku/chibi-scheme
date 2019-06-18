@@ -847,9 +847,9 @@
 
 #ifdef _WIN32
 #ifdef BUILDING_DLL
-#define SEXP_API    __declspec(dllexport)
+#define SEXP_API    extern
 #else
-#define SEXP_API    __declspec(dllimport)
+#define SEXP_API    extern
 #endif
 #else
 #define SEXP_API    extern
